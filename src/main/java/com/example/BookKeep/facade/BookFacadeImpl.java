@@ -1,7 +1,7 @@
 package com.example.BookKeep.facade;
 
 import com.example.BookKeep.dto.BookDTO;
-import com.example.BookKeep.exception.AuthorNotFoundException;
+import com.example.BookKeep.mapper.AuthorMapper;
 import com.example.BookKeep.mapper.BookMapper;
 import com.example.BookKeep.model.Author;
 import com.example.BookKeep.model.Book;
@@ -18,25 +18,20 @@ public class BookFacadeImpl implements BookFacade{
     private final BookService bookService;
     private final AuthorService authorService;
     private final BookMapper bookMapper;
+    private final AuthorMapper authorMapper;
 
     @Autowired
-    public BookFacadeImpl(BookService bookService, AuthorService authorService, BookMapper bookMapper){
+    public BookFacadeImpl(BookService bookService, AuthorService authorService, BookMapper bookMapper, AuthorMapper authorMapper){
         this.bookService = bookService;
         this.authorService = authorService;
         this.bookMapper = bookMapper;
+        this.authorMapper = authorMapper;
     }
 
     @Override
     public BookDTO createBook(BookDTO bookDTO){
-        Author author = authorService.getAuthorById(bookDTO.getAuthor().getId());
-        if (author == null){
-            author = new Author();
-            author.setId(bookDTO.getAuthor().getId());
-            author.setName(bookDTO.getAuthor().getName());
-            author = authorService.createAuthor(author);
-        }else{
-            throw new AuthorNotFoundException("Автор с ID " + bookDTO.getAuthor().getId() + " уже существует");
-        }
+        Author author = authorMapper.mapToAuthor(bookDTO.getAuthor());
+        author = authorService.createAuthor(author);
         Book book = bookMapper.mapToBook(bookDTO);
         book.setAuthor(author);
         book = bookService.createBook(book);
