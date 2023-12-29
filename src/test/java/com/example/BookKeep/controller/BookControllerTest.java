@@ -33,7 +33,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void testCreateBook() {
+    public void testCreateAndFetchBooks() {
         System.out.println();
 
         // Given
